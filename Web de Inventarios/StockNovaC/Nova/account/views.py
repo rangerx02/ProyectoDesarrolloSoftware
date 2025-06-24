@@ -10,6 +10,7 @@ from django.http import Http404
 from django.contrib.auth.decorators import login_required
 from .models import Usuario, Almacen, Proveedor, Categoria
 from .forms import UsuarioForm, AlmacenForm, ProveedorForm, CategoriaForm
+from django.contrib.auth.decorators import user_passes_test
 
 
 MONEDAS = [
@@ -180,7 +181,15 @@ def vista_productos(request):
 
 
 #Recien Agregado
-@login_required
+
+def staff_required(view_func):
+    return user_passes_test(
+        lambda u: u.is_active,
+        login_url='login'
+    )(view_func)
+
+
+@staff_required
 def lista_usuarios(request):
     usuarios = Usuario.objects.all()
     return render(request, 'account/usuarios_lista.html', {'usuarios': usuarios})
@@ -247,3 +256,4 @@ def crear_categoria(request):
     else:
         form = CategoriaForm()
     return render(request, 'account/categoria_form.html', {'form': form})
+

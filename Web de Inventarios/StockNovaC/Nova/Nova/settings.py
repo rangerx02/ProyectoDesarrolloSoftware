@@ -130,7 +130,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #------------------------------------------------------------------
 
 # URL para redireccionar después de un login exitoso
-LOGIN_REDIRECT_URL = 'home'  # Cambia 'home' por tu URL de destino
+LOGIN_REDIRECT_URL = 'dashboard'  # Actualizado a tu vista dashboard
 
 # URL para redireccionar cuando se necesita login
 LOGIN_URL = 'login'  # Nombre de tu URL de login
@@ -139,3 +139,9 @@ LOGIN_URL = 'login'  # Nombre de tu URL de login
 LOGOUT_REDIRECT_URL = 'login'  # O la página que prefieras
 
 AUTH_USER_MODEL = 'account.Usuario'
+
+# Añade al final:
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'account.gestor_usuarios.CustomAuthBackend'
+]
