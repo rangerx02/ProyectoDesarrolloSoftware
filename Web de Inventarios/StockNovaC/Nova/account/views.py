@@ -53,12 +53,13 @@ def construction_view(request):
 
 
 # CRUD DE PRODUCTOS
+@login_required
 def dashboard(request):
     return render(request, 'account/dashboard.html')
 
 
 
-
+@login_required
 def producto_crear(request):
     if request.method == 'POST':
         # Obtener datos del formulario
@@ -86,6 +87,7 @@ def producto_crear(request):
     }
     return render(request, 'account/productos.html', context)
 
+@login_required
 def productos_listar(request):
     """Muestra la lista completa de productos"""
     try:
@@ -109,6 +111,7 @@ def productos_listar(request):
         messages.error(request, f"Error al cargar productos: {str(e)}")
         return render(request, 'account/productos_listar.html', {'productos': []})
     
+@login_required
 def producto_editar(request, pk):
     try:
         productos = obtener_productos()
@@ -153,6 +156,7 @@ def producto_editar(request, pk):
         return redirect('productos_listar')
 
 
+@login_required
 def producto_eliminar(request, pk):
     try:
         if request.method == 'POST':
@@ -257,3 +261,106 @@ def crear_categoria(request):
         form = CategoriaForm()
     return render(request, 'account/categoria_form.html', {'form': form})
 
+# ========== USUARIOS ==========
+@login_required
+def lista_usuarios(request):
+    usuarios = Usuario.objects.all()
+    return render(request, 'account/usuarios_lista.html', {
+        'usuarios': usuarios,
+        'titulo': 'Lista de Usuarios'
+    })
+
+@login_required
+def crear_usuario(request):
+    if request.method == 'POST':
+        form = UsuarioForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            messages.success(request, 'Usuario creado exitosamente!')
+            return redirect('usuarios_listar')
+    else:
+        form = UsuarioForm()
+    
+    return render(request, 'account/usuario_form.html', {
+        'form': form,
+        'titulo': 'Nuevo Usuario',
+        'monedas': MONEDAS
+    })
+
+# ========== ALMACENES ==========
+@login_required
+def lista_almacenes(request):
+    almacenes = Almacen.objects.all().select_related('responsable')
+    return render(request, 'account/almacenes_lista.html', {
+        'almacenes': almacenes,
+        'titulo': 'Lista de Almacenes'
+    })
+
+@login_required
+def crear_almacen(request):
+    if request.method == 'POST':
+        form = AlmacenForm(request.POST)
+        if form.is_valid():
+            almacen = form.save()
+            messages.success(request, f'Almacén "{almacen.nombre}" creado exitosamente!')
+            return redirect('almacenes_listar')
+    else:
+        form = AlmacenForm()
+    
+    return render(request, 'account/almacen_form.html', {
+        'form': form,
+        'titulo': 'Nuevo Almacén',
+        'usuarios': Usuario.objects.filter(is_active=True)
+    })
+
+# ========== PROVEEDORES ==========
+@login_required
+def lista_proveedores(request):
+    proveedores = Proveedor.objects.all()
+    return render(request, 'account/proveedores_lista.html', {
+        'proveedores': proveedores,
+        'titulo': 'Lista de Proveedores'
+    })
+
+@login_required
+def crear_proveedor(request):
+    if request.method == 'POST':
+        form = ProveedorForm(request.POST)
+        if form.is_valid():
+            proveedor = form.save()
+            messages.success(request, f'Proveedor "{proveedor.nombre}" creado exitosamente!')
+            return redirect('proveedores_listar')
+    else:
+        form = ProveedorForm()
+    
+    return render(request, 'account/proveedor_form.html', {
+        'form': form,
+        'titulo': 'Nuevo Proveedor'
+    })
+
+# ========== CATEGORÍAS ==========
+@login_required
+def lista_categorias(request):
+    categorias = Categoria.objects.all()
+    return render(request, 'account/categorias_lista.html', {
+        'categorias': categorias,
+        'titulo': 'Lista de Categorías'
+    })
+
+@login_required
+def crear_categoria(request):
+    if request.method == 'POST':
+        form = CategoriaForm(request.POST)
+        if form.is_valid():
+            categoria = form.save()
+            messages.success(request, f'Categoría "{categoria.nombre}" creada exitosamente!')
+            return redirect('categorias_listar')
+    else:
+        form = CategoriaForm()
+    
+    return render(request, 'account/categoria_form.html', {
+        'form': form,
+        'titulo': 'Nueva Categoría'
+    })
