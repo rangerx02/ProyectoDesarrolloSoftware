@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Productos - StockNova</title>
+    <link rel="stylesheet" href="{% static 'account/css/style.css' %}">
+</head>
+<body>
+    <h1>Gestión de Productos</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Registrar producto</button>
+    </form>
+
+    <h2>Lista de productos</h2>
+    <table>
+        <tr>
+            <th>Nombre</th><th>SKU</th><th>Stock</th><th>Estado</th>
+        </tr>
+        {% for producto in productos %}
+        <tr>
+            <td>{{ producto.nombre }}</td>
+            <td>{{ producto.sku }}</td>
+            <td>{{ producto.cantidad }}</td>
+            <td>{{ producto.estado|yesno:"Activo,Inactivo" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">No hay productos registrados.</td></tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
