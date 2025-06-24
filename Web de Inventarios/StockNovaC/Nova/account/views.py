@@ -33,17 +33,22 @@ PROVEEDORES = [
     {'id': 3, 'nombre': 'Proveedor 3'}
 ]
 
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+
 def user_login(request):
     error = None
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
         
-        if validar_usuario(username, password):
-            return redirect('dashboard')  # Redirige al dashboard en lugar de productos_listar
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('dashboard')  # Redirige al dashboard después del login
         else:
-            error = "Usuario no registrado o credenciales incorrectas."
-            
+            error = "Credenciales inválidas. Por favor intenta nuevamente."
+    
     return render(request, 'account/login.html', {'error': error})
 
 def construction_view(request):
@@ -363,4 +368,125 @@ def crear_categoria(request):
     return render(request, 'account/categoria_form.html', {
         'form': form,
         'titulo': 'Nueva Categoría'
+    })
+    
+# ========== VISTAS PARA USUARIOS ==========
+@login_required
+def editar_usuario(request, pk):
+    usuario = get_object_or_404(Usuario, pk=pk)
+    if request.method == 'POST':
+        form = UsuarioForm(request.POST, instance=usuario)
+        if form.is_valid():
+            user = form.save()
+            messages.success(request, 'Usuario actualizado exitosamente!')
+            return redirect('usuarios_listar')
+    else:
+        form = UsuarioForm(instance=usuario)
+    
+    return render(request, 'account/usuario_form.html', {
+        'form': form,
+        'titulo': 'Editar Usuario',
+        'monedas': MONEDAS
+    })
+
+@login_required
+def eliminar_usuario(request, pk):
+    usuario = get_object_or_404(Usuario, pk=pk)
+    if request.method == 'POST':
+        usuario.delete()
+        messages.success(request, 'Usuario eliminado exitosamente!')
+        return redirect('usuarios_listar')
+    
+    return render(request, 'account/usuario_confirmar_eliminar.html', {
+        'usuario': usuario
+    })
+
+# ========== VISTAS PARA ALMACENES ==========
+@login_required
+def editar_almacen(request, pk):
+    almacen = get_object_or_404(Almacen, pk=pk)
+    if request.method == 'POST':
+        form = AlmacenForm(request.POST, instance=almacen)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Almacén actualizado exitosamente!')
+            return redirect('almacenes_listar')
+    else:
+        form = AlmacenForm(instance=almacen)
+    
+    return render(request, 'account/almacen_form.html', {
+        'form': form,
+        'titulo': 'Editar Almacén'
+    })
+
+@login_required
+def eliminar_almacen(request, pk):
+    almacen = get_object_or_404(Almacen, pk=pk)
+    if request.method == 'POST':
+        almacen.delete()
+        messages.success(request, 'Almacén eliminado exitosamente!')
+        return redirect('almacenes_listar')
+    
+    return render(request, 'account/almacen_confirmar_eliminar.html', {
+        'almacen': almacen
+    })
+
+# ========== VISTAS PARA PROVEEDORES ==========
+@login_required
+def editar_proveedor(request, pk):
+    proveedor = get_object_or_404(Proveedor, pk=pk)
+    if request.method == 'POST':
+        form = ProveedorForm(request.POST, instance=proveedor)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Proveedor actualizado exitosamente!')
+            return redirect('proveedores_listar')
+    else:
+        form = ProveedorForm(instance=proveedor)
+    
+    return render(request, 'account/proveedor_form.html', {
+        'form': form,
+        'titulo': 'Editar Proveedor'
+    })
+
+@login_required
+def eliminar_proveedor(request, pk):
+    proveedor = get_object_or_404(Proveedor, pk=pk)
+    if request.method == 'POST':
+        proveedor.delete()
+        messages.success(request, 'Proveedor eliminado exitosamente!')
+        return redirect('proveedores_listar')
+    
+    return render(request, 'account/proveedor_confirmar_eliminar.html', {
+        'proveedor': proveedor
+    })
+
+# ========== VISTAS PARA CATEGORÍAS ==========
+@login_required
+def editar_categoria(request, pk):
+    categoria = get_object_or_404(Categoria, pk=pk)
+    if request.method == 'POST':
+        form = CategoriaForm(request.POST, instance=categoria)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Categoría actualizada exitosamente!')
+            return redirect('categorias_listar')
+    else:
+        form = CategoriaForm(instance=categoria)
+    
+    return render(request, 'account/categoria_form.html', {
+        'form': form,
+        'titulo': 'Editar Categoría'
+    })
+
+@login_required
+def eliminar_categoria(request, pk):
+    categoria = get_object_or_404(Categoria, pk=pk)
+    if request.method == 'POST':
+        categoria.delete()
+        messages.success(request, 'Categoría eliminada exitosamente!')
+        return redirect('categorias_listar')
+    
+    return render(request, 'account/categoria_confirmar_eliminar.html', {
+        'categoria': categoria
     })
