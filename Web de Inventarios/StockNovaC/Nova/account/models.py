@@ -8,8 +8,9 @@ class Usuario(AbstractUser):
         ('almacen', 'Almacén'),
         ('compras', 'Compras'),
     )
-    id_usuario = models.CharField(max_length=20, unique=True)
-    rol = models.CharField(max_length=20, choices=ROLES)
+    # Elimina id_usuario o hazlo opcional
+    id_usuario = models.CharField(max_length=20, unique=True, blank=True, null=True)
+    rol = models.CharField(max_length=20, choices=ROLES, default='almacen')
     estado = models.BooleanField(default=True)
     
     class Meta:

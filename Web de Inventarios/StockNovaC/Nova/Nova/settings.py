@@ -143,5 +143,4 @@ AUTH_USER_MODEL = 'account.Usuario'
 # Añade al final:
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
-    'account.gestor_usuarios.CustomAuthBackend'
 ]

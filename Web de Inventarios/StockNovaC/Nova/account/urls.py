@@ -1,10 +1,16 @@
 from django.urls import path
-from . import views
 from .views import (
-    user_login, vista_productos, dashboard, productos_listar, producto_crear, producto_editar, producto_eliminar,
+    user_login, 
+    dashboard,
+    # Productos
+    productos_listar, producto_crear, producto_editar, producto_eliminar,
+    # Usuarios
     lista_usuarios, crear_usuario, editar_usuario, eliminar_usuario,
+    # Almacenes
     lista_almacenes, crear_almacen, editar_almacen, eliminar_almacen,
+    # Proveedores
     lista_proveedores, crear_proveedor, editar_proveedor, eliminar_proveedor,
+    # Categorías
     lista_categorias, crear_categoria, editar_categoria, eliminar_categoria
 )
 

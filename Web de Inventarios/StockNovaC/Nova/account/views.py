@@ -45,7 +45,7 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('dashboard')  # Redirige al dashboard después del login
+            return redirect('dashboard')
         else:
             error = "Credenciales inválidas. Por favor intenta nuevamente."
     
