@@ -8,13 +8,14 @@ def validar_usuario(username, password, archivo='admin.txt'):
     """Valida las credenciales contra el archivo TXT"""
     try:
         # Construye la ruta absoluta al archivo
-        file_path = os.path.join(os.path.dirname(__file__), '..', archivo)
-        file_path = os.path.abspath(file_path)
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        file_path = os.path.join(base_dir, archivo)
         
         with open(file_path, 'r') as f:
             for line in f:
-                if ';' in line:  # Verifica que la línea tenga el formato correcto
-                    user, passwd = line.strip().split(';')
+                line = line.strip()
+                if line and ';' in line:  # Verifica que la línea tenga el formato correcto
+                    user, passwd = line.split(';')
                     if username == user and password == passwd:
                         return True
     except FileNotFoundError:

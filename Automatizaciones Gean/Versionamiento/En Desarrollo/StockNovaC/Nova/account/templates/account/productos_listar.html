@@ -1,0 +1,261 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Productos</title>
+    <link rel="stylesheet" href="{% static 'account/css/productos.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Jost&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
+            font-family: 'Jost', sans-serif;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .title {
+            font-size: 24px;
+            color: #333;
+            margin: 0;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        
+        .messages {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+        
+        .messages li {
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .products-table th, 
+        .products-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .products-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+        
+        .products-table tr:hover {
+            background-color: #f5f8fa;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .status-active {
+            background-color: #e6f7ee;
+            color: #28a745;
+        }
+        
+        .status-inactive {
+            background-color: #feecec;
+            color: #dc3545;
+        }
+        
+        .stock-low {
+            color: #ffc107;
+            font-weight: 600;
+        }
+        
+        .stock-critical {
+            color: #dc3545;
+            font-weight: 600;
+        }
+        
+        .action-links {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .edit-link {
+            background-color: #e7f1ff;
+            color: #0056b3;
+        }
+        
+        .edit-link:hover {
+            background-color: #d0e3ff;
+        }
+        
+        .delete-link {
+            background-color: #fdecea;
+            color: #dc3545;
+        }
+        
+        .delete-link:hover {
+            background-color: #fadbd8;
+        }
+        
+        .no-products {
+            text-align: center;
+            padding: 30px;
+            color: #6c757d;
+            font-size: 16px;
+        }
+        
+        .price {
+            font-weight: 600;
+            color: #28a745;
+        }
+        
+        @media (max-width: 768px) {
+            .products-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Gestión de Productos</h1>
+            <a href="{% url 'producto_crear' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nuevo Producto
+            </a>
+        </div>
+        
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        
+        <table class="products-table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>SKU</th>
+                    <th>Categoría</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Unidad</th>
+                    <th>Proveedor</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in productos %}
+                <tr>
+                    <td>{{ producto.nombre }}</td>
+                    <td>{{ producto.sku }}</td>
+                    <td>{{ producto.categoria.nombre }}</td>
+                    <td class="price">${{ producto.precio_unitario }}</td>
+                    <td class="{% if producto.cantidad < 5 %}stock-critical{% elif producto.cantidad < 15 %}stock-low{% endif %}">
+                        {{ producto.cantidad }}
+                    </td>
+                    <td>{{ producto.unidad }}</td>
+                    <td>{{ producto.proveedor.nombre }}</td>
+                    <td>
+                        <span class="status {% if producto.estado %}status-active{% else %}status-inactive{% endif %}">
+                            {{ producto.estado|yesno:"Activo,Inactivo" }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-links">
+                            <a href="{% url 'producto_editar' producto.id %}" class="action-link edit-link">
+                                <i class="fas fa-edit"></i> Editar
+                            </a>
+                            <a href="{% url 'producto_eliminar' producto.id %}" class="action-link delete-link">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" class="no-products">
+                        <i class="fas fa-box-open" style="font-size: 24px; margin-bottom: 10px;"></i><br>
+                        No hay productos registrados
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

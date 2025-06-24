@@ -11,6 +11,8 @@ from django.contrib.auth.decorators import login_required
 from .models import Usuario, Almacen, Proveedor, Categoria
 from .forms import UsuarioForm, AlmacenForm, ProveedorForm, CategoriaForm
 from django.contrib.auth.decorators import user_passes_test
+from .decorators import login_required_custom
+from utils.gestor_usuarios import validar_usuario
 
 
 MONEDAS = [
@@ -37,19 +39,28 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 
 def user_login(request):
+    """Vista de login personalizada"""
     error = None
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
         
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
+        if validar_usuario(username, password):
+            # Guardar usuario en sesión
+            request.session['usuario_autenticado'] = True
+            request.session['username'] = username
+            messages.success(request, '¡Bienvenido!')
             return redirect('dashboard')
         else:
             error = "Credenciales inválidas. Por favor intenta nuevamente."
-    
+            
     return render(request, 'account/login.html', {'error': error})
+
+def user_logout(request):
+    """Cierra la sesión del usuario"""
+    request.session.flush()  # Elimina todos los datos de sesión
+    messages.info(request, 'Has cerrado sesión correctamente.')
+    return redirect('login')
 
 def construction_view(request):
     return user_login(request)  # Reutiliza la misma lógica
@@ -58,13 +69,15 @@ def construction_view(request):
 
 
 # CRUD DE PRODUCTOS
-@login_required
+@login_required_custom
 def dashboard(request):
-    return render(request, 'account/dashboard.html')
+    """Vista protegida del dashboard"""
+    username = request.session.get('username', 'Invitado')
+    return render(request, 'account/dashboard.html', {'username': username})
 
 
 
-@login_required
+@login_required_custom
 def producto_crear(request):
     if request.method == 'POST':
         # Obtener datos del formulario
@@ -92,7 +105,7 @@ def producto_crear(request):
     }
     return render(request, 'account/productos.html', context)
 
-@login_required
+@login_required_custom
 def productos_listar(request):
     """Muestra la lista completa de productos"""
     try:
@@ -116,7 +129,7 @@ def productos_listar(request):
         messages.error(request, f"Error al cargar productos: {str(e)}")
         return render(request, 'account/productos_listar.html', {'productos': []})
     
-@login_required
+@login_required_custom
 def producto_editar(request, pk):
     try:
         productos = obtener_productos()
@@ -161,7 +174,7 @@ def producto_editar(request, pk):
         return redirect('productos_listar')
 
 
-@login_required
+@login_required_custom
 def producto_eliminar(request, pk):
     try:
         if request.method == 'POST':
@@ -203,7 +216,7 @@ def lista_usuarios(request):
     usuarios = Usuario.objects.all()
     return render(request, 'account/usuarios_lista.html', {'usuarios': usuarios})
 
-@login_required
+@login_required_custom
 def crear_usuario(request):
     if request.method == 'POST':
         form = UsuarioForm(request.POST)
@@ -215,12 +228,12 @@ def crear_usuario(request):
         form = UsuarioForm()
     return render(request, 'account/usuario_form.html', {'form': form})
 
-@login_required
+@login_required_custom
 def lista_almacenes(request):
     almacenes = Almacen.objects.all()
     return render(request, 'account/almacenes_lista.html', {'almacenes': almacenes})
 
-@login_required
+@login_required_custom
 def crear_almacen(request):
     if request.method == 'POST':
         form = AlmacenForm(request.POST)
@@ -232,12 +245,12 @@ def crear_almacen(request):
         form = AlmacenForm()
     return render(request, 'account/almacen_form.html', {'form': form})
 
-@login_required
+@login_required_custom
 def lista_proveedores(request):
     proveedores = Proveedor.objects.all()
     return render(request, 'account/proveedores_lista.html', {'proveedores': proveedores})
 
-@login_required
+@login_required_custom
 def crear_proveedor(request):
     if request.method == 'POST':
         form = ProveedorForm(request.POST)
@@ -249,12 +262,12 @@ def crear_proveedor(request):
         form = ProveedorForm()
     return render(request, 'account/proveedor_form.html', {'form': form})
 
-@login_required
+@login_required_custom
 def lista_categorias(request):
     categorias = Categoria.objects.all()
     return render(request, 'account/categorias_lista.html', {'categorias': categorias})
 
-@login_required
+@login_required_custom
 def crear_categoria(request):
     if request.method == 'POST':
         form = CategoriaForm(request.POST)
@@ -267,7 +280,7 @@ def crear_categoria(request):
     return render(request, 'account/categoria_form.html', {'form': form})
 
 # ========== USUARIOS ==========
-@login_required
+@login_required_custom
 def lista_usuarios(request):
     usuarios = Usuario.objects.all()
     return render(request, 'account/usuarios_lista.html', {
@@ -275,7 +288,7 @@ def lista_usuarios(request):
         'titulo': 'Lista de Usuarios'
     })
 
-@login_required
+@login_required_custom
 def crear_usuario(request):
     if request.method == 'POST':
         form = UsuarioForm(request.POST)
@@ -295,7 +308,7 @@ def crear_usuario(request):
     })
 
 # ========== ALMACENES ==========
-@login_required
+@login_required_custom
 def lista_almacenes(request):
     almacenes = Almacen.objects.all().select_related('responsable')
     return render(request, 'account/almacenes_lista.html', {
@@ -303,7 +316,7 @@ def lista_almacenes(request):
         'titulo': 'Lista de Almacenes'
     })
 
-@login_required
+@login_required_custom
 def crear_almacen(request):
     if request.method == 'POST':
         form = AlmacenForm(request.POST)
@@ -321,7 +334,7 @@ def crear_almacen(request):
     })
 
 # ========== PROVEEDORES ==========
-@login_required
+@login_required_custom
 def lista_proveedores(request):
     proveedores = Proveedor.objects.all()
     return render(request, 'account/proveedores_lista.html', {
@@ -329,7 +342,7 @@ def lista_proveedores(request):
         'titulo': 'Lista de Proveedores'
     })
 
-@login_required
+@login_required_custom
 def crear_proveedor(request):
     if request.method == 'POST':
         form = ProveedorForm(request.POST)
@@ -346,7 +359,7 @@ def crear_proveedor(request):
     })
 
 # ========== CATEGORÍAS ==========
-@login_required
+@login_required_custom
 def lista_categorias(request):
     categorias = Categoria.objects.all()
     return render(request, 'account/categorias_lista.html', {
@@ -354,7 +367,7 @@ def lista_categorias(request):
         'titulo': 'Lista de Categorías'
     })
 
-@login_required
+@login_required_custom
 def crear_categoria(request):
     if request.method == 'POST':
         form = CategoriaForm(request.POST)
@@ -371,7 +384,7 @@ def crear_categoria(request):
     })
     
 # ========== VISTAS PARA USUARIOS ==========
-@login_required
+@login_required_custom
 def editar_usuario(request, pk):
     usuario = get_object_or_404(Usuario, pk=pk)
     if request.method == 'POST':
@@ -389,7 +402,7 @@ def editar_usuario(request, pk):
         'monedas': MONEDAS
     })
 
-@login_required
+@login_required_custom
 def eliminar_usuario(request, pk):
     usuario = get_object_or_404(Usuario, pk=pk)
     if request.method == 'POST':
@@ -402,7 +415,7 @@ def eliminar_usuario(request, pk):
     })
 
 # ========== VISTAS PARA ALMACENES ==========
-@login_required
+@login_required_custom
 def editar_almacen(request, pk):
     almacen = get_object_or_404(Almacen, pk=pk)
     if request.method == 'POST':
@@ -419,7 +432,7 @@ def editar_almacen(request, pk):
         'titulo': 'Editar Almacén'
     })
 
-@login_required
+@login_required_custom
 def eliminar_almacen(request, pk):
     almacen = get_object_or_404(Almacen, pk=pk)
     if request.method == 'POST':
@@ -432,7 +445,7 @@ def eliminar_almacen(request, pk):
     })
 
 # ========== VISTAS PARA PROVEEDORES ==========
-@login_required
+@login_required_custom
 def editar_proveedor(request, pk):
     proveedor = get_object_or_404(Proveedor, pk=pk)
     if request.method == 'POST':
@@ -449,7 +462,7 @@ def editar_proveedor(request, pk):
         'titulo': 'Editar Proveedor'
     })
 
-@login_required
+@login_required_custom
 def eliminar_proveedor(request, pk):
     proveedor = get_object_or_404(Proveedor, pk=pk)
     if request.method == 'POST':
@@ -462,7 +475,7 @@ def eliminar_proveedor(request, pk):
     })
 
 # ========== VISTAS PARA CATEGORÍAS ==========
-@login_required
+@login_required_custom
 def editar_categoria(request, pk):
     categoria = get_object_or_404(Categoria, pk=pk)
     if request.method == 'POST':
@@ -479,7 +492,7 @@ def editar_categoria(request, pk):
         'titulo': 'Editar Categoría'
     })
 
-@login_required
+@login_required_custom
 def eliminar_categoria(request, pk):
     categoria = get_object_or_404(Categoria, pk=pk)
     if request.method == 'POST':
@@ -489,4 +502,54 @@ def eliminar_categoria(request, pk):
     
     return render(request, 'account/categoria_confirmar_eliminar.html', {
         'categoria': categoria
+    })
+    
+    
+@login_required_custom
+def lista_usuarios(request):
+    """Vista para listar usuarios desde admin.txt"""
+    try:
+        with open('admin.txt', 'r') as f:
+            usuarios = [line.strip().split(';')[0] for line in f if line.strip()]
+    except FileNotFoundError:
+        usuarios = []
+    
+    return render(request, 'account/lista_generica.html', {
+        'titulo': 'Lista de Usuarios',
+        'items': usuarios,
+        'tipo': 'usuarios'
+    })
+
+@login_required_custom
+def lista_proveedores(request):
+    """Vista para listar proveedores"""
+    # Usando tus datos predefinidos
+    return render(request, 'account/lista_generica.html', {
+        'titulo': 'Lista de Proveedores',
+        'items': PROVEEDORES,
+        'tipo': 'proveedores'
+    })
+
+@login_required_custom
+def lista_categorias(request):
+    """Vista para listar categorías"""
+    # Usando tus datos predefinidos
+    return render(request, 'account/lista_generica.html', {
+        'titulo': 'Lista de Categorías',
+        'items': CATEGORIAS,
+        'tipo': 'categorias'
+    })
+
+@login_required_custom
+def lista_almacenes(request):
+    """Vista para listar almacenes"""
+    # Puedes crear una lista similar a PROVEEDORES
+    ALMACENES = [
+        {'id': 1, 'nombre': 'Almacén Principal'},
+        {'id': 2, 'nombre': 'Almacén Secundario'}
+    ]
+    return render(request, 'account/lista_generica.html', {
+        'titulo': 'Lista de Almacenes',
+        'items': ALMACENES,
+        'tipo': 'almacenes'
     })

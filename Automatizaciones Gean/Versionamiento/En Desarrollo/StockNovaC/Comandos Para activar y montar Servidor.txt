@@ -1,0 +1,13 @@
+my_StockNova\Scripts\actívate    --- Para activar
+
+cd .\Nova\    --- Entrar en proyecto
+
+
+python.exe manage.py runserver  --- Correr servidor
+
+
+
+------------ No necesario si activaste  el .Bat-----
+
+# Instalar dependencias
+pip install -r requirements.txt
