@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if editar %}Editar{% else %}Nuevo{% endif %} Proveedor</title>
+    <!-- Mismos estilos -->
+</head>
+<body>
+<div class="card">
+    <div class="icono-titulo">
+        <i class="fas fa-truck"></i>
+    </div>
+    <h2>{% if editar %}Editar{% else %}Nuevo{% endif %} Proveedor</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label><i class="fas fa-building"></i> Nombre</label>
+            <input type="text" name="nombre" value="{{ proveedor.nombre }}" required>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-user"></i> Contacto</label>
+            <input type="text" name="contacto" value="{{ proveedor.contacto }}" required>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-phone"></i> Teléfono</label>
+            <input type="text" name="telefono" value="{{ proveedor.telefono }}" required>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-envelope"></i> Email</label>
+            <input type="email" name="email" value="{{ proveedor.email }}" required>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-map-marked-alt"></i> Dirección</label>
+            <textarea name="direccion" rows="2" required>{{ proveedor.direccion }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-id-card"></i> NIT</label>
+            <input type="text" name="nit" value="{{ proveedor.nit }}" required>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-boxes"></i> Productos suministrados</label>
+            <textarea name="productos_suministrados" rows="3" required>{{ proveedor.productos_suministrados }}</textarea>
+        </div>
+
+        <!-- Estado y botones -->
+    </form>
+</div>
+</body>
+</html>

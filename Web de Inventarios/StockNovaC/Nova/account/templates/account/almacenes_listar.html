@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Almacenes</title>
+    <link rel="stylesheet" href="{% static 'account/css/productos.css' %}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1 class="title">Gestión de Almacenes</h1>
+        <a href="{% url 'almacen_crear' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Nuevo Almacén
+        </a>
+    </div>
+    <table class="products-table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Número</th>
+                <th>Ubicación</th>
+                <th>Capacidad</th>
+                <th>Responsable</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for almacen in almacenes %}
+            <tr>
+                <td>{{ almacen.nombre }}</td>
+                <td>{{ almacen.numero }}</td>
+                <td>{{ almacen.ubicacion }}</td>
+                <td>{{ almacen.capacidad }}</td>
+                <td>{{ almacen.responsable }}</td>
+                <td>{{ almacen.estado|yesno:"Activo,Inactivo" }}</td>
+                <td>
+                    <a href="{% url 'almacen_editar' almacen.id %}" class="action-link edit-link">Editar</a>
+                    <a href="{% url 'almacen_eliminar' almacen.id %}" class="action-link delete-link">Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7">No hay almacenes registrados.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

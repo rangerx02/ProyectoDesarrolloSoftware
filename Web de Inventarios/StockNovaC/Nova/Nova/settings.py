@@ -137,3 +137,5 @@ LOGIN_URL = 'login'  # Nombre de tu URL de login
 
 # URL para redireccionar después de logout
 LOGOUT_REDIRECT_URL = 'login'  # O la página que prefieras
+
+AUTH_USER_MODEL = 'account.Usuario'

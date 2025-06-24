@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Producto, Categoria, Proveedor
+from .models import Producto, Categoria, Proveedor, Usuario, Almacen
 
 class LoginForm(forms.Form):
     """
@@ -64,3 +64,39 @@ class ProductoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
        
+       
+       
+#Recien Agregado    
+class UsuarioForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+    
+    class Meta:
+        model = Usuario
+        fields = ['username', 'password', 'id_usuario', 'first_name', 'last_name', 'email', 'rol', 'estado']
+        widgets = {
+            'estado': forms.Select(choices=[(True, 'Activo'), (False, 'Inactivo')]),
+        }
+
+class AlmacenForm(forms.ModelForm):
+    class Meta:
+        model = Almacen
+        fields = '__all__'
+        widgets = {
+            'estado': forms.Select(choices=[(True, 'Activo'), (False, 'Inactivo')]),
+        }
+
+class ProveedorForm(forms.ModelForm):
+    class Meta:
+        model = Proveedor
+        fields = '__all__'
+        widgets = {
+            'estado': forms.Select(choices=[(True, 'Activo'), (False, 'Inactivo')]),
+        }
+
+class CategoriaForm(forms.ModelForm):
+    class Meta:
+        model = Categoria
+        fields = '__all__'
+        widgets = {
+            'estado': forms.Select(choices=[(True, 'Activo'), (False, 'Inactivo')]),
+        }

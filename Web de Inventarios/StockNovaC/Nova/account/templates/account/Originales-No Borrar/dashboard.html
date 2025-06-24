@@ -24,14 +24,7 @@
         }
 
         .dashboard h2 {
-            margin-bottom: 30px;
-        }
-
-        .dashboard .link-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            align-items: center;
+            margin-bottom: 20px;
         }
 
         .dashboard a {
@@ -42,8 +35,6 @@
             border-radius: 6px;
             text-decoration: none;
             font-weight: bold;
-            width: 200px;
-            text-align: center;
         }
 
         .dashboard a:hover {
@@ -54,13 +45,7 @@
 <body>
     <div class="dashboard">
         <h2>Bienvenido {{ user.username }}</h2>
-        <div class="link-container">
-            <a href="{% url 'productos_listar' %}">🗃️ Productos</a>
-            <a href="{% url 'usuarios_listar' %}">👥 Usuarios</a>
-            <a href="{% url 'proveedores_listar' %}">🏢 Proveedores</a>
-            <a href="{% url 'almacenes_listar' %}">🏬 Almacenes</a>
-            <a href="{% url 'categorias_listar' %}">📦 Categorías</a>
-        </div>
+        <a href="{% url 'productos_listar' %}">🗃️ Productos</a>
     </div>
 </body>
 </html>

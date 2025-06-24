@@ -1,0 +1,129 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if editar %}Editar{% else %}Nuevo{% endif %} Usuario</title>
+    <link rel="stylesheet" href="{% static 'account/css/productos.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Jost&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* Estilos consistentes con producto_form.html */
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Jost', sans-serif;
+        }
+        .botones {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        .guardar {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .cancelar {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .alert {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="icono-titulo">
+        <i class="fas fa-user"></i>
+    </div>
+    <h2>{% if editar %}Editar{% else %}Nuevo{% endif %} Usuario</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label><i class="fas fa-id-card"></i> Nombre de usuario</label>
+            <input type="text" name="username" value="{{ usuario.username }}" required>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-key"></i> Contraseña</label>
+            <input type="password" name="password" {% if not editar %}required{% endif %}>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-id-badge"></i> ID Usuario</label>
+            <input type="text" name="id_usuario" value="{{ usuario.id_usuario }}" required>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-user-tag"></i> Rol</label>
+            <select name="rol" required>
+                <option value="">Seleccione</option>
+                <option value="admin" {% if usuario.rol == 'admin' %}selected{% endif %}>Administrador</option>
+                <option value="almacen" {% if usuario.rol == 'almacen' %}selected{% endif %}>Almacén</option>
+                <option value="compras" {% if usuario.rol == 'compras' %}selected{% endif %}>Compras</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-toggle-on"></i> Estado</label>
+            <select name="estado" required>
+                <option value="True" {% if usuario.estado %}selected{% endif %}>Activo</option>
+                <option value="False" {% if not usuario.estado %}selected{% endif %}>Inactivo</option>
+            </select>
+        </div>
+
+        <div class="botones">
+            <button class="guardar" type="submit">
+                {% if editar %}✔ Actualizar{% else %}✔ Guardar{% endif %}
+            </button>
+            <a href="{% url 'lista_usuarios' %}" class="cancelar">✘ Cancelar</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

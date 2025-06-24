@@ -7,6 +7,9 @@ from .forms import ProductoForm
 from django.contrib import messages
 from utils.gestor_productos import guardar_producto, obtener_productos, actualizar_producto, eliminar_producto
 from django.http import Http404
+from django.contrib.auth.decorators import login_required
+from .models import Usuario, Almacen, Proveedor, Categoria
+from .forms import UsuarioForm, AlmacenForm, ProveedorForm, CategoriaForm
 
 
 MONEDAS = [
@@ -174,3 +177,73 @@ def vista_productos(request):
     # Lógica para ver productos o lo que necesites
     productos = Producto.objects.all()
     return render(request, 'account/vista_productos.html', {'productos': productos})
+
+
+#Recien Agregado
+@login_required
+def lista_usuarios(request):
+    usuarios = Usuario.objects.all()
+    return render(request, 'account/usuarios_lista.html', {'usuarios': usuarios})
+
+@login_required
+def crear_usuario(request):
+    if request.method == 'POST':
+        form = UsuarioForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            messages.success(request, 'Usuario creado exitosamente!')
+            return redirect('lista_usuarios')
+    else:
+        form = UsuarioForm()
+    return render(request, 'account/usuario_form.html', {'form': form})
+
+@login_required
+def lista_almacenes(request):
+    almacenes = Almacen.objects.all()
+    return render(request, 'account/almacenes_lista.html', {'almacenes': almacenes})
+
+@login_required
+def crear_almacen(request):
+    if request.method == 'POST':
+        form = AlmacenForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Almacén creado exitosamente!')
+            return redirect('lista_almacenes')
+    else:
+        form = AlmacenForm()
+    return render(request, 'account/almacen_form.html', {'form': form})
+
+@login_required
+def lista_proveedores(request):
+    proveedores = Proveedor.objects.all()
+    return render(request, 'account/proveedores_lista.html', {'proveedores': proveedores})
+
+@login_required
+def crear_proveedor(request):
+    if request.method == 'POST':
+        form = ProveedorForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Proveedor creado exitosamente!')
+            return redirect('lista_proveedores')
+    else:
+        form = ProveedorForm()
+    return render(request, 'account/proveedor_form.html', {'form': form})
+
+@login_required
+def lista_categorias(request):
+    categorias = Categoria.objects.all()
+    return render(request, 'account/categorias_lista.html', {'categorias': categorias})
+
+@login_required
+def crear_categoria(request):
+    if request.method == 'POST':
+        form = CategoriaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Categoría creada exitosamente!')
+            return redirect('lista_categorias')
+    else:
+        form = CategoriaForm()
+    return render(request, 'account/categoria_form.html', {'form': form})

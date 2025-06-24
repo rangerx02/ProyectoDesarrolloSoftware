@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if editar %}Editar{% else %}Nuevo{% endif %} Categoría</title>
+    <!-- Mismos estilos -->
+</head>
+<body>
+<div class="card">
+    <div class="icono-titulo">
+        <i class="fas fa-tags"></i>
+    </div>
+    <h2>{% if editar %}Editar{% else %}Nueva{% endif %} Categoría</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label><i class="fas fa-tag"></i> Nombre</label>
+            <input type="text" name="nombre" value="{{ categoria.nombre }}" required>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-align-left"></i> Descripción</label>
+            <textarea name="descripcion" rows="3" required>{{ categoria.descripcion }}</textarea>
+        </div>
+
+        <!-- Estado y botones -->
+    </form>
+</div>
+</body>
+</html>

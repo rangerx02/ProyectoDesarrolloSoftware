@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Categorías</title>
+    <link rel="stylesheet" href="{% static 'account/css/productos.css' %}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1 class="title">Gestión de Categorías</h1>
+        <a href="{% url 'categoria_crear' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Nueva Categoría
+        </a>
+    </div>
+    <table class="products-table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for categoria in categorias %}
+            <tr>
+                <td>{{ categoria.nombre }}</td>
+                <td>{{ categoria.descripcion }}</td>
+                <td>{{ categoria.estado|yesno:"Activo,Inactivo" }}</td>
+                <td>
+                    <a href="{% url 'categoria_editar' categoria.id %}" class="action-link edit-link">Editar</a>
+                    <a href="{% url 'categoria_eliminar' categoria.id %}" class="action-link delete-link">Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">No hay categorías registradas.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
