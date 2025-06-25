@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ titulo }}</title>
+    <link rel="stylesheet" href="{% static 'account/css/style.css' %}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1 class="title">{{ titulo }}</h1>
+        {% if tipo == 'usuarios' %}
+            <a href="{% url 'crear_usuario' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nuevo Usuario
+            </a>
+        {% elif tipo == 'proveedores' %}
+            <a href="{% url 'crear_proveedor' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nuevo Proveedor
+            </a>
+        {% elif tipo == 'categorias' %}
+            <a href="{% url 'crear_categoria' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nueva Categoría
+            </a>
+        {% elif tipo == 'almacenes' %}
+            <a href="{% url 'crear_almacen' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nuevo Almacén
+            </a>
+        {% endif %}
+    </div>
+    <table class="products-table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>ID</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.nombre }}</td>
+                <td>{{ item.id }}</td>
+                <td>
+                    {% if tipo == 'usuarios' %}
+                        <a href="{% url 'editar_usuario' item.id %}" class="action-link edit-link">Editar</a>
+                        <a href="{% url 'eliminar_usuario' item.id %}" class="action-link delete-link">Eliminar</a>
+                    {% elif tipo == 'proveedores' %}
+                        <a href="{% url 'editar_proveedor' item.id %}" class="action-link edit-link">Editar</a>
+                        <a href="{% url 'eliminar_proveedor' item.id %}" class="action-link delete-link">Eliminar</a>
+                    {% elif tipo == 'categorias' %}
+                        <a href="{% url 'editar_categoria' item.id %}" class="action-link edit-link">Editar</a>
+                        <a href="{% url 'eliminar_categoria' item.id %}" class="action-link delete-link">Eliminar</a>
+                    {% elif tipo == 'almacenes' %}
+                        <a href="{% url 'editar_almacen' item.id %}" class="action-link edit-link">Editar</a>
+                        <a href="{% url 'eliminar_almacen' item.id %}" class="action-link delete-link">Eliminar</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">No hay registros.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

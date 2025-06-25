@@ -1,11 +1,9 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Producto, Categoria, Proveedor, Usuario, Almacen
+from django.contrib.auth.hashers import make_password
+from .models import Producto, Categoria, Proveedor, Almacen
 
 class LoginForm(forms.Form):
-    """
-    Formulario para el login de usuarios.
-    """
     username = forms.CharField(
         label='Usuario',
         widget=forms.TextInput(attrs={
@@ -26,14 +24,31 @@ class LoginForm(forms.Form):
         })
     )
 
-    def clean(self):
-        cleaned_data = super().clean()
-        for field in self.Meta.fields:
-            if not cleaned_data.get(field):
-                self.add_error(field, 'Este campo es obligatorio.')
-        return cleaned_data
-    
-    
+class UsuarioForm(forms.Form):
+    username = forms.CharField(label='Nombre de usuario', max_length=50)
+    nombre_completo = forms.CharField(label='Nombre completo', max_length=100)
+    password = forms.CharField(
+        label='Contraseña',
+        widget=forms.PasswordInput,
+        required=False
+    )
+    rol = forms.ChoiceField(
+        label='Rol',
+        choices=[('admin', 'Administrador'), ('almacen', 'Almacén')]
+    )
+    estado = forms.BooleanField(
+        label='Activo',
+        initial=True,
+        required=False,
+        widget=forms.CheckboxInput
+    )
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        if not password and not self.instance:
+            raise ValidationError("La contraseña es obligatoria para nuevos usuarios")
+        return password
+
 class ProductoForm(forms.ModelForm):
     class Meta:
         model = Producto
@@ -56,24 +71,6 @@ class ProductoForm(forms.ModelForm):
             'cantidad': forms.NumberInput(attrs={'placeholder': 'Ej: 50'}),
             'unidad': forms.Select(choices=Producto.UNIDAD_CHOICES),
             'sku': forms.TextInput(attrs={'placeholder': 'Ej: PROD-001'}),
-            'estado': forms.Select(choices=[(True, 'Activo'), (False, 'Inactivo')]),
-            'categoria': forms.Select(),  # Se llenará desde la vista
-            'proveedor': forms.Select(),  # Se llenará desde la vista
-        }
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-       
-       
-       
-#Recien Agregado    
-class UsuarioForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput)
-    
-    class Meta:
-        model = Usuario
-        fields = ['username', 'password', 'id_usuario', 'first_name', 'last_name', 'email', 'rol', 'estado']
-        widgets = {
             'estado': forms.Select(choices=[(True, 'Activo'), (False, 'Inactivo')]),
         }
 

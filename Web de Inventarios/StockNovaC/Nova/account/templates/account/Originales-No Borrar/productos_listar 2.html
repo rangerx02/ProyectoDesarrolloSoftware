@@ -223,13 +223,13 @@
                 <tr>
                     <td>{{ producto.nombre }}</td>
                     <td>{{ producto.sku }}</td>
-                    <td>{{ producto.categoria_nombre|default:"Desconocida" }}</td>
+                    <td>{{ producto.categoria.nombre }}</td>
                     <td class="price">${{ producto.precio_unitario }}</td>
                     <td class="{% if producto.cantidad < 5 %}stock-critical{% elif producto.cantidad < 15 %}stock-low{% endif %}">
                         {{ producto.cantidad }}
                     </td>
                     <td>{{ producto.unidad }}</td>
-                    <td>{{ producto.proveedor_nombre|default:"Desconocido" }}</td>
+                    <td>{{ producto.proveedor.nombre }}</td>
                     <td>
                         <span class="status {% if producto.estado %}status-active{% else %}status-inactive{% endif %}">
                             {{ producto.estado|yesno:"Activo,Inactivo" }}

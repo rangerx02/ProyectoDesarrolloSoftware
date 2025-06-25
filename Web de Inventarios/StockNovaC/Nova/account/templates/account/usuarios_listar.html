@@ -27,13 +27,13 @@
         <tbody>
             {% for usuario in usuarios %}
             <tr>
-                <td>{{ usuario.nombre }}</td>
-                <td>{{ usuario.usuario_id }}</td>
-                <td>{{ usuario.rol }}</td>
+                <td>{{ usuario.username }}</td>  <!-- Usa username en lugar de nombre -->
+                <td>{{ usuario.id }}</td>
+                <td>{{ usuario.get_rol_display }}</td>
                 <td>{{ usuario.estado|yesno:"Activo,Inactivo" }}</td>
                 <td>
-                    <a href="{% url 'usuario_editar' usuario.id %}" class="action-link edit-link">Editar</a>
-                    <a href="{% url 'usuario_eliminar' usuario.id %}" class="action-link delete-link">Eliminar</a>
+                    <a href="{% url 'editar_usuario' usuario.id %}">Editar</a>
+                    <a href="{% url 'eliminar_usuario' usuario.id %}">Eliminar</a>
                 </td>
             </tr>
             {% empty %}

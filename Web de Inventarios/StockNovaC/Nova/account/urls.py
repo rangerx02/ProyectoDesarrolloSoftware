@@ -1,4 +1,5 @@
 from django.urls import path
+""""
 from .views import (
     user_login, 
     dashboard,
@@ -13,14 +14,26 @@ from .views import (
     # Categorías
     lista_categorias, crear_categoria, editar_categoria, eliminar_categoria
 )
+"""
+from .views import (
+    user_login, user_logout, dashboard,
+    lista_usuarios, crear_usuario, editar_usuario, eliminar_usuario,
+    lista_proveedores, crear_proveedor, editar_proveedor, eliminar_proveedor,
+    lista_categorias, crear_categoria, editar_categoria, eliminar_categoria,
+    lista_almacenes, crear_almacen, editar_almacen, eliminar_almacen,
+    producto_crear, productos_listar, producto_editar, producto_eliminar
+)
 
 urlpatterns = [
     path('', user_login, name='login'),
     path('dashboard/', dashboard, name='dashboard'),
+    #path('login/', user_login, name='login'),
+    #path('logout/', user_logout, name='logout'),
+    #path('dashboard/', dashboard, name='dashboard'),
     
     # Productos
     path('productos/', productos_listar, name='productos_listar'),
-    path('productos/nuevo/', producto_crear, name='producto_crear'),
+    path('productos/crear/', producto_crear, name='producto_crear'),
     path('productos/editar/<int:pk>/', producto_editar, name='producto_editar'),
     path('productos/eliminar/<int:pk>/', producto_eliminar, name='producto_eliminar'),
     
