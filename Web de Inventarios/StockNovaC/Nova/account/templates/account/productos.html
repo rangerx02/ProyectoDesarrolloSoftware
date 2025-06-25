@@ -3,17 +3,180 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Nuevo producto</title>
+    <title>Nuevo Producto</title>
     <link rel="stylesheet" href="{% static 'account/css/productos.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Jost&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Jost', sans-serif;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .icono-titulo {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #3498db;
+            font-size: 2.2rem;
+        }
+        
+        h2 {
+            text-align: center;
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+        }
+        
+        .alert {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .alert.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .alert.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .form-group label i {
+            margin-right: 8px;
+            width: 16px;
+            text-align: center;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-family: 'Jost', sans-serif;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .row .form-group {
+            flex: 1;
+        }
+        
+        .estado {
+            display: flex;
+            gap: 15px;
+            margin-top: 8px;
+        }
+        
+        .estado label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+        
+        .estado input[type="radio"] {
+            width: auto;
+        }
+        
+        .botones {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .guardar, .cancelar {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Jost', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .guardar {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .guardar:hover {
+            background-color: #2980b9;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .cancelar {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .cancelar:hover {
+            background-color: #5a6268;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 <body>
 <div class="card">
     <div class="icono-titulo">
         <i class="fas fa-box-open"></i>
     </div>
-    <h2>Nuevo producto</h2>
+    <h2>Nuevo Producto</h2>
 
     {% if messages %}
         {% for message in messages %}
@@ -30,13 +193,13 @@
 
         <div class="form-group">
             <label><i class="fas fa-align-left"></i> Descripción</label>
-            <textarea name="descripcion" rows="2" required></textarea>
+            <textarea name="descripcion" rows="3" required></textarea>
         </div>
 
         <div class="form-group">
             <label><i class="fas fa-th"></i> Categoría</label>
             <select name="categoria" required>
-                <option value="">Seleccione</option>
+                <option value="">Seleccione una categoría</option>
                 {% for categoria in categorias %}
                     <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
                 {% endfor %}
@@ -47,7 +210,7 @@
             <div class="form-group">
                 <label><i class="fas fa-coins"></i> Moneda</label>
                 <select name="moneda" required>
-                    <option value="">Seleccione</option>
+                    <option value="">Seleccione moneda</option>
                     {% for moneda in monedas %}
                         <option value="{{ moneda.codigo }}">{{ moneda.nombre }}</option>
                     {% endfor %}
@@ -55,7 +218,7 @@
             </div>
             <div class="form-group">
                 <label><i class="fas fa-dollar-sign"></i> Precio unitario</label>
-                <input type="number" name="precio_unitario" required>
+                <input type="number" name="precio_unitario" step="0.01" required>
             </div>
         </div>
 
@@ -63,28 +226,28 @@
             <div class="form-group">
                 <label><i class="fas fa-ruler-combined"></i> Unidad de medida</label>
                 <select name="unidad_medida" required>
-                    <option value="">Seleccione</option>
-                    <option value="kg">kg</option>
-                    <option value="ml">ml</option>
-                    <option value="litro">litro</option>
-                    <option value="unidad">unidad</option>
+                    <option value="">Seleccione unidad</option>
+                    <option value="kg">Kilogramos (kg)</option>
+                    <option value="ml">Mililitros (ml)</option>
+                    <option value="litro">Litros (l)</option>
+                    <option value="unidad">Unidades</option>
                 </select>
             </div>
             <div class="form-group">
-                <label><i class="fas fa-boxes"></i> Cantidad stock</label>
+                <label><i class="fas fa-boxes"></i> Cantidad en stock</label>
                 <input type="number" name="cantidad" required>
             </div>
         </div>
 
         <div class="form-group">
-            <label><i class="fas fa-barcode"></i> Código de barras</label>
+            <label><i class="fas fa-barcode"></i> Código de barras (SKU)</label>
             <input type="text" name="codigo_barras" required>
         </div>
 
         <div class="form-group">
             <label><i class="fas fa-truck"></i> Proveedor</label>
             <select name="proveedor" required>
-                <option value="">Seleccione</option>
+                <option value="">Seleccione proveedor</option>
                 {% for proveedor in proveedores %}
                     <option value="{{ proveedor.id }}">{{ proveedor.nombre }}</option>
                 {% endfor %}
@@ -94,14 +257,22 @@
         <div class="form-group">
             <label><i class="fas fa-toggle-on"></i> Estado</label>
             <div class="estado">
-                <label><input type="radio" name="estado" value="activo" checked> Activo</label>
-                <label><input type="radio" name="estado" value="inactivo"> Inactivo</label>
+                <label>
+                    <input type="radio" name="estado" value="activo" checked> Activo
+                </label>
+                <label>
+                    <input type="radio" name="estado" value="inactivo"> Inactivo
+                </label>
             </div>
         </div>
 
         <div class="botones">
-            <button class="guardar" type="submit">✔ Guardar</button>
-            <a href="{% url 'productos_listar' %}" class="cancelar">✘ Cancelar</a>
+            <button class="guardar" type="submit">
+                <i class="fas fa-save"></i> Guardar
+            </button>
+            <a href="{% url 'productos_listar' %}" class="cancelar">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
         </div>
     </form>
 </div>
