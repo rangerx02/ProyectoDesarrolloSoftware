@@ -1,1 +1,2 @@
 1;Bultos;True
+2;herramientas;False
