@@ -4,11 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <title>{% if editar %}Editar{% else %}Nuevo{% endif %} Usuario</title>
-    <link rel="stylesheet" href="{% static 'account/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'account/css/usuarios.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Jost&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        /* Estilos consistentes con producto_form.html */
         .card {
             background: white;
             padding: 30px;
@@ -39,7 +38,7 @@
             margin-top: 30px;
         }
         .guardar {
-            background: #007bff;
+            background: #28a745;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -47,12 +46,18 @@
             cursor: pointer;
             font-weight: bold;
         }
+        .guardar:hover {
+            background: #218838;
+        }
         .cancelar {
             background: #6c757d;
             color: white;
             padding: 10px 20px;
             border-radius: 5px;
             text-decoration: none;
+        }
+        .cancelar:hover {
+            background: #5a6268;
         }
         .alert {
             padding: 10px;
@@ -66,6 +71,34 @@
         .success {
             background: #d4edda;
             color: #155724;
+        }
+        .row {
+            display: flex;
+            gap: 20px;
+        }
+        .row .form-group {
+            flex: 1;
+        }
+        .estado {
+            display: flex;
+            gap: 20px;
+            margin-top: 8px;
+            padding-left: 4px;
+        }
+        .icono-titulo {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+            color: #3b3b3b;
+        }
+        .password-toggle {
+            position: relative;
+        }
+        .password-toggle i {
+            position: absolute;
+            right: 10px;
+            top: 35px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -84,19 +117,31 @@
 
     <form method="post">
         {% csrf_token %}
+        <div class="row">
+            <div class="form-group">
+                <label><i class="fas fa-user"></i> Nombre</label>
+                <input type="text" name="nombre" value="{{ usuario.nombre }}" required>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-user"></i> Apellido</label>
+                <input type="text" name="apellido" value="{{ usuario.apellido }}" required>
+            </div>
+        </div>
+
         <div class="form-group">
-            <label><i class="fas fa-id-card"></i> Nombre de usuario</label>
+            <label><i class="fas fa-at"></i> Nombre de usuario</label>
             <input type="text" name="username" value="{{ usuario.username }}" required>
         </div>
 
-        <div class="form-group">
+        <div class="form-group password-toggle">
             <label><i class="fas fa-key"></i> Contraseña</label>
-            <input type="password" name="password" {% if not editar %}required{% endif %}>
+            <input type="password" name="password" id="password" {% if not editar %}required{% endif %}>
+            <i class="fas fa-eye" id="togglePassword"></i>
         </div>
 
         <div class="form-group">
-            <label><i class="fas fa-id-badge"></i> ID Usuario</label>
-            <input type="text" name="id_usuario" value="{{ usuario.id_usuario }}" required>
+            <label><i class="fas fa-envelope"></i> Email</label>
+            <input type="email" name="email" value="{{ usuario.email }}" required>
         </div>
 
         <div class="form-group">
@@ -106,15 +151,22 @@
                 <option value="admin" {% if usuario.rol == 'admin' %}selected{% endif %}>Administrador</option>
                 <option value="almacen" {% if usuario.rol == 'almacen' %}selected{% endif %}>Almacén</option>
                 <option value="compras" {% if usuario.rol == 'compras' %}selected{% endif %}>Compras</option>
+                <option value="ventas" {% if usuario.rol == 'ventas' %}selected{% endif %}>Ventas</option>
             </select>
         </div>
 
         <div class="form-group">
             <label><i class="fas fa-toggle-on"></i> Estado</label>
-            <select name="estado" required>
-                <option value="True" {% if usuario.estado %}selected{% endif %}>Activo</option>
-                <option value="False" {% if not usuario.estado %}selected{% endif %}>Inactivo</option>
-            </select>
+            <div class="estado">
+                <label>
+                    <input type="radio" name="estado" value="activo" 
+                           {% if usuario.estado %}checked{% endif %}> Activo
+                </label>
+                <label>
+                    <input type="radio" name="estado" value="inactivo"
+                           {% if not usuario.estado %}checked{% endif %}> Inactivo
+                </label>
+            </div>
         </div>
 
         <div class="botones">
@@ -125,5 +177,16 @@
         </div>
     </form>
 </div>
+<script>
+    // Mostrar/ocultar contraseña
+    const togglePassword = document.querySelector('#togglePassword');
+    const password = document.querySelector('#password');
+    
+    togglePassword.addEventListener('click', function() {
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+        this.classList.toggle('fa-eye-slash');
+    });
+</script>
 </body>
 </html>
