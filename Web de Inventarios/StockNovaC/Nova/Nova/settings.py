@@ -57,7 +57,10 @@ ROOT_URLCONF = 'Nova.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),  # Directorio global de templates
+            os.path.join(BASE_DIR, 'account/templates'),  # Directorio de templates de la app
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -118,9 +121,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-# Static files (CSS, JavaScript, Images)
+# Configuración de archivos estáticos
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'account/static')]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),  # Directorio global de static
+    os.path.join(BASE_DIR, 'account/static'),  # Directorio de static de la app
+]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 

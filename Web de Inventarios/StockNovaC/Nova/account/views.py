@@ -134,7 +134,7 @@ def lista_usuarios(request):
         return redirect('dashboard')
     
     usuarios = GestorUsuariosCreados.obtener_usuarios()
-    return render(request, 'account/usuarios_lista.html', {
+    return render(request, 'account/usuarios_listar.html', {
         'usuarios': usuarios,
         'titulo': 'Lista de Usuarios'
     })
@@ -346,7 +346,7 @@ def producto_eliminar(request, pk):
 @login_required_custom
 def lista_proveedores(request):
     proveedores = leer_datos(PROVEEDORES_FILE)
-    return render(request, 'account/proveedores_lista.html', {
+    return render(request, 'account/proveedores_listar.html', {
         'proveedores': proveedores,
         'titulo': 'Lista de Proveedores'
     })
@@ -414,7 +414,7 @@ def eliminar_proveedor(request, pk):
 @login_required_custom
 def lista_categorias(request):
     categorias = leer_datos(CATEGORIAS_FILE)
-    return render(request, 'account/categorias_lista.html', {
+    return render(request, 'account/categorias_listar.html', {
         'categorias': categorias,
         'titulo': 'Lista de Categorías'
     })
@@ -482,7 +482,7 @@ def eliminar_categoria(request, pk):
 @login_required_custom
 def lista_almacenes(request):
     almacenes = leer_datos(ALMACENES_FILE)
-    return render(request, 'account/almacenes_lista.html', {
+    return render(request, 'account/almacenes_listar.html', {
         'almacenes': almacenes,
         'titulo': 'Lista de Almacenes'
     })
