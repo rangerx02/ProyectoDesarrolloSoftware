@@ -16,6 +16,8 @@ class Usuario(AbstractUser):
     class Meta:
         verbose_name = 'Usuario'
         verbose_name_plural = 'Usuarios'
+        
+        
 
 class Categoria(models.Model):
     nombre = models.CharField(max_length=100)
