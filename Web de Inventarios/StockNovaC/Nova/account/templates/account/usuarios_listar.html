@@ -5,42 +5,103 @@
     <meta charset="UTF-8">
     <title>Usuarios</title>
     <link rel="stylesheet" href="{% static 'account/css/usuarios.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Jost&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* Copia todos los estilos de productos_listar.html */
+        
+        .role-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .role-admin {
+            background-color: #e6f7ee;
+            color: #28a745;
+        }
+        
+        .role-manager {
+            background-color: #e7f1ff;
+            color: #0056b3;
+        }
+        
+        .role-user {
+            background-color: #f8f9fa;
+            color: #495057;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-    <div class="header">
-        <h1 class="title">Gestión de Usuarios</h1>
-        <a href="{% url 'crear_usuario' %}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Nuevo Usuario
-        </a>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Gestión de Usuarios</h1>
+            <a href="{% url 'crear_usuario' %}" class="btn btn-primary">
+                <i class="fas fa-user-plus"></i> Nuevo Usuario
+            </a>
+        </div>
+        
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        
+        <table class="products-table">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Nombre</th>
+                    <th>Rol</th>
+                    <th>Email</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                <tr>
+                    <td>
+                        <strong>{{ usuario.username }}</strong><br>
+                        <small>ID: {{ usuario.id }}</small>
+                    </td>
+                    <td>{{ usuario.get_full_name|default:"-" }}</td>
+                    <td>
+                        <span class="role-badge role-{{ usuario.rol|lower }}">
+                            {{ usuario.get_rol_display }}
+                        </span>
+                    </td>
+                    <td>{{ usuario.email|default:"-" }}</td>
+                    <td>
+                        <span class="status {% if usuario.estado %}status-active{% else %}status-inactive{% endif %}">
+                            {{ usuario.estado|yesno:"Activo,Inactivo" }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-links">
+                            <a href="{% url 'editar_usuario' usuario.id %}" class="action-link edit-link">
+                                <i class="fas fa-edit"></i> Editar
+                            </a>
+                            <a href="{% url 'eliminar_usuario' usuario.id %}" class="action-link delete-link">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="no-products">
+                        <i class="fas fa-users" style="font-size: 24px; margin-bottom: 10px;"></i><br>
+                        No hay usuarios registrados
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-    <table class="products-table">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>ID</th>
-                <th>Rol</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for usuario in usuarios %}
-            <tr>
-                <td>{{ usuario.username }}</td>  <!-- Usa username en lugar de nombre -->
-                <td>{{ usuario.id }}</td>
-                <td>{{ usuario.get_rol_display }}</td>
-                <td>{{ usuario.estado|yesno:"Activo,Inactivo" }}</td>
-                <td>
-                    <a href="{% url 'editar_usuario' usuario.id %}">Editar</a>
-                    <a href="{% url 'eliminar_usuario' usuario.id %}">Eliminar</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="5">No hay usuarios registrados.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
 </body>
 </html>

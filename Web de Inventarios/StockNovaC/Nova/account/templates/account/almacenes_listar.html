@@ -5,46 +5,93 @@
     <meta charset="UTF-8">
     <title>Almacenes</title>
     <link rel="stylesheet" href="{% static 'account/css/almacenes.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Jost&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* Copia todos los estilos de productos_listar.html hasta .container */
+        
+        .capacity {
+            font-weight: 600;
+        }
+        
+        .capacity-high {
+            color: #28a745;
+        }
+        
+        .capacity-medium {
+            color: #ffc107;
+        }
+        
+        .capacity-low {
+            color: #dc3545;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-    <div class="header">
-        <h1 class="title">Gestión de Almacenes</h1>
-        <a href="{% url 'crear_almacen' %}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Nuevo Almacén
-        </a>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Gestión de Almacenes</h1>
+            <a href="{% url 'crear_almacen' %}" class="btn btn-primary">
+                <i class="fas fa-warehouse"></i> Nuevo Almacén
+            </a>
+        </div>
+        
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        
+        <table class="products-table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Código</th>
+                    <th>Ubicación</th>
+                    <th>Capacidad</th>
+                    <th>Responsable</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for almacen in almacenes %}
+                <tr>
+                    <td>{{ almacen.nombre }}</td>
+                    <td>ALM-{{ almacen.id|stringformat:"04d" }}</td>
+                    <td>{{ almacen.ubicacion|default:"-" }}</td>
+                    <td class="capacity {% if almacen.capacidad > 1000 %}capacity-high{% elif almacen.capacidad > 500 %}capacity-medium{% else %}capacity-low{% endif %}">
+                        {{ almacen.capacidad }} m²
+                    </td>
+                    <td>{{ almacen.responsable|default:"-" }}</td>
+                    <td>
+                        <span class="status {% if almacen.estado %}status-active{% else %}status-inactive{% endif %}">
+                            {{ almacen.estado|yesno:"Activo,Inactivo" }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-links">
+                            <a href="{% url 'editar_almacen' almacen.id %}" class="action-link edit-link">
+                                <i class="fas fa-edit"></i> Editar
+                            </a>
+                            <a href="{% url 'eliminar_almacen' almacen.id %}" class="action-link delete-link">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="no-products">
+                        <i class="fas fa-warehouse" style="font-size: 24px; margin-bottom: 10px;"></i><br>
+                        No hay almacenes registrados
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-    <table class="products-table">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Número</th>
-                <th>Ubicación</th>
-                <th>Capacidad</th>
-                <th>Responsable</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for almacen in almacenes %}
-            <tr>
-                <td>{{ almacen.nombre }}</td>
-                <td>{{ almacen.numero }}</td>
-                <td>{{ almacen.ubicacion }}</td>
-                <td>{{ almacen.capacidad }}</td>
-                <td>{{ almacen.responsable }}</td>
-                <td>{{ almacen.estado|yesno:"Activo,Inactivo" }}</td>
-                <td>
-                    <a href="{% url 'almacen_editar' almacen.id %}" class="action-link edit-link">Editar</a>
-                    <a href="{% url 'almacen_eliminar' almacen.id %}" class="action-link delete-link">Eliminar</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="7">No hay almacenes registrados.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
 </body>
 </html>

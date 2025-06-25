@@ -5,50 +5,106 @@
     <meta charset="UTF-8">
     <title>Proveedores</title>
     <link rel="stylesheet" href="{% static 'account/css/proveedores.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Jost&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* Copia todos los estilos de productos_listar.html */
+        
+        .contact-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .email-link {
+            color: #007bff;
+            text-decoration: none;
+        }
+        
+        .email-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-    <div class="header">
-        <h1 class="title">Gestión de Proveedores</h1>
-        <a href="{% url 'crear_proveedor' %}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Nuevo Proveedor
-        </a>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Gestión de Proveedores</h1>
+            <a href="{% url 'crear_proveedor' %}" class="btn btn-primary">
+                <i class="fas fa-truck"></i> Nuevo Proveedor
+            </a>
+        </div>
+        
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        
+        <table class="products-table">
+            <thead>
+                <tr>
+                    <th>Empresa</th>
+                    <th>Contacto</th>
+                    <th>Información</th>
+                    <th>Productos</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for proveedor in proveedores %}
+                <tr>
+                    <td>
+                        <strong>{{ proveedor.nombre }}</strong><br>
+                        <small>NIT: {{ proveedor.nit }}</small>
+                    </td>
+                    <td>
+                        {{ proveedor.contacto }}<br>
+                        <div class="contact-info">
+                            <i class="fas fa-phone"></i> {{ proveedor.telefono }}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="contact-info">
+                            <i class="fas fa-envelope"></i> 
+                            <a href="mailto:{{ proveedor.correo }}" class="email-link">
+                                {{ proveedor.correo }}
+                            </a>
+                        </div>
+                        <div class="contact-info">
+                            <i class="fas fa-map-marker-alt"></i> {{ proveedor.direccion|truncatechars:30 }}
+                        </div>
+                    </td>
+                    <td>{{ proveedor.productos_asociados.count|default:"0" }}</td>
+                    <td>
+                        <span class="status {% if proveedor.estado %}status-active{% else %}status-inactive{% endif %}">
+                            {{ proveedor.estado|yesno:"Activo,Inactivo" }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-links">
+                            <a href="{% url 'editar_proveedor' proveedor.id %}" class="action-link edit-link">
+                                <i class="fas fa-edit"></i> Editar
+                            </a>
+                            <a href="{% url 'eliminar_proveedor' proveedor.id %}" class="action-link delete-link">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="no-products">
+                        <i class="fas fa-truck" style="font-size: 24px; margin-bottom: 10px;"></i><br>
+                        No hay proveedores registrados
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-    <table class="products-table">
-        <thead>
-            <tr>
-                <th>Empresa</th>
-                <th>Contacto</th>
-                <th>Teléfono</th>
-                <th>Correo</th>
-                <th>Dirección</th>
-                <th>NIT</th>
-                <th>Productos</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for proveedor in proveedores %}
-            <tr>
-                <td>{{ proveedor.nombre }}</td>
-                <td>{{ proveedor.contacto }}</td>
-                <td>{{ proveedor.telefono }}</td>
-                <td>{{ proveedor.correo }}</td>
-                <td>{{ proveedor.direccion }}</td>
-                <td>{{ proveedor.nit }}</td>
-                <td>{{ proveedor.productos }}</td>
-                <td>{{ proveedor.estado|yesno:"Activo,Inactivo" }}</td>
-                <td>
-                    <a href="{% url 'proveedor_editar' proveedor.id %}" class="action-link edit-link">Editar</a>
-                    <a href="{% url 'proveedor_eliminar' proveedor.id %}" class="action-link delete-link">Eliminar</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="9">No hay proveedores registrados.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
 </body>
 </html>
