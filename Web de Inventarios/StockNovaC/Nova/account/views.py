@@ -146,25 +146,27 @@ def crear_usuario(request):
         return redirect('dashboard')
     
     if request.method == 'POST':
-        form = UsuarioForm(request.POST)
-        if form.is_valid():
-            success, message = GestorUsuariosCreados.crear_usuario(
-                username=form.cleaned_data['username'],
-                nombre=form.cleaned_data['nombre_completo'],
-                password=form.cleaned_data['password'],
-                rol=form.cleaned_data['rol'],
-                estado=form.cleaned_data['estado']
-            )
-            if success:
-                messages.success(request, message)
-                return redirect('lista_usuarios')
-            messages.error(request, message)
-    else:
-        form = UsuarioForm()
+        # Procesar datos directamente como en productos
+        usuario_data = {
+            'username': request.POST.get('username'),
+            'nombres': request.POST.get('nombres'),
+            'apellidos': request.POST.get('apellidos'),
+            'email': request.POST.get('email'),
+            'password': request.POST.get('password1'),
+            'rol': request.POST.get('rol'),
+            'estado': request.POST.get('estado') == 'activo'
+        }
+        
+        success, message = GestorUsuariosCreados.crear_usuario(**usuario_data)
+        if success:
+            messages.success(request, message)
+            return redirect('usuarios_listar')
+        messages.error(request, message)
     
-    return render(request, 'account/usuario_form.html', {
-        'form': form,
-        'titulo': 'Nuevo Usuario'
+    # Pasar las variables necesarias al template
+    return render(request, 'account/usuarios.html', {
+        'titulo': 'Nuevo Usuario',
+        'roles': ['admin', 'almacen', 'ventas']  # Opciones para el select
     })
 
 @login_required_custom
@@ -178,32 +180,26 @@ def editar_usuario(request, pk):
         raise Http404("Usuario no encontrado")
         
     if request.method == 'POST':
-        form = UsuarioForm(request.POST)
-        if form.is_valid():
-            update_data = {
-                'nombre': form.cleaned_data['nombre_completo'],
-                'rol': form.cleaned_data['rol'],
-                'estado': form.cleaned_data['estado']
-            }
-            if form.cleaned_data['password']:
-                update_data['password'] = form.cleaned_data['password']
-                
-            success, message = GestorUsuariosCreados.actualizar_usuario(int(pk), **update_data)
-            if success:
-                messages.success(request, message)
-                return redirect('lista_usuarios')
-            messages.error(request, message)
-    else:
-        form = UsuarioForm(initial={
-            'username': usuario['username'],
-            'nombre_completo': usuario['nombre'],
-            'rol': usuario['rol'],
-            'estado': usuario['estado']
-        })
+        update_data = {
+            'nombres': request.POST.get('nombres'),
+            'apellidos': request.POST.get('apellidos'),
+            'email': request.POST.get('email'),
+            'rol': request.POST.get('rol'),
+            'estado': request.POST.get('estado') == 'activo'
+        }
+        if request.POST.get('password1'):
+            update_data['password'] = request.POST.get('password1')
+            
+        success, message = GestorUsuariosCreados.actualizar_usuario(int(pk), **update_data)
+        if success:
+            messages.success(request, message)
+            return redirect('usuarios_listar')
+        messages.error(request, message)
     
-    return render(request, 'account/usuario_form.html', {
-        'form': form,
+    return render(request, 'account/usuarios.html', {
+        'usuario': usuario,
         'titulo': 'Editar Usuario',
+        'roles': ['admin', 'almacen', 'ventas'],
         'editar': True
     })
 
@@ -354,22 +350,21 @@ def lista_proveedores(request):
 @login_required_custom
 def crear_proveedor(request):
     if request.method == 'POST':
-        form = ProveedorForm(request.POST)
-        if form.is_valid():
-            proveedores = leer_datos(PROVEEDORES_FILE)
-            nuevo_proveedor = {
-                'id': obtener_siguiente_id(proveedores),
-                'nombre': form.cleaned_data['nombre'],
-                'estado': True
-            }
-            proveedores.append(nuevo_proveedor)
-            guardar_datos(PROVEEDORES_FILE, proveedores)
-            messages.success(request, 'Proveedor creado!')
-            return redirect('lista_proveedores')
-    else:
-        form = ProveedorForm()
-    return render(request, 'account/proveedor_form.html', {
-        'form': form,
+        proveedores = leer_datos(PROVEEDORES_FILE)
+        nuevo_proveedor = {
+            'id': obtener_siguiente_id(proveedores),
+            'nombre': request.POST.get('nombre'),
+            'email': request.POST.get('email'),
+            'telefono': request.POST.get('telefono'),
+            'direccion': request.POST.get('direccion'),
+            'estado': request.POST.get('estado') == 'activo'
+        }
+        proveedores.append(nuevo_proveedor)
+        guardar_datos(PROVEEDORES_FILE, proveedores)
+        messages.success(request, 'Proveedor creado exitosamente!')
+        return redirect('proveedores_listar')
+    
+    return render(request, 'account/proveedores.html', {
         'titulo': 'Nuevo Proveedor'
     })
 
@@ -379,20 +374,23 @@ def editar_proveedor(request, pk):
     proveedor = next((p for p in proveedores if p['id'] == int(pk)), None)
     if not proveedor:
         raise Http404("Proveedor no encontrado")
+        
     if request.method == 'POST':
-        form = ProveedorForm(request.POST)
-        if form.is_valid():
-            proveedor['nombre'] = form.cleaned_data['nombre']
-            guardar_datos(PROVEEDORES_FILE, proveedores)
-            messages.success(request, 'Proveedor actualizado!')
-            return redirect('lista_proveedores')
-    else:
-        form = ProveedorForm(initial={
-            'nombre': proveedor['nombre']
+        proveedor.update({
+            'nombre': request.POST.get('nombre'),
+            'email': request.POST.get('email'),
+            'telefono': request.POST.get('telefono'),
+            'direccion': request.POST.get('direccion'),
+            'estado': request.POST.get('estado') == 'activo'
         })
-    return render(request, 'account/proveedor_form.html', {
-        'form': form,
-        'titulo': 'Editar Proveedor'
+        guardar_datos(PROVEEDORES_FILE, proveedores)
+        messages.success(request, 'Proveedor actualizado!')
+        return redirect('proveedores_listar')
+    
+    return render(request, 'account/proveedores.html', {
+        'proveedor': proveedor,
+        'titulo': 'Editar Proveedor',
+        'editar': True
     })
 
 @login_required_custom
@@ -422,22 +420,19 @@ def lista_categorias(request):
 @login_required_custom
 def crear_categoria(request):
     if request.method == 'POST':
-        form = CategoriaForm(request.POST)
-        if form.is_valid():
-            categorias = leer_datos(CATEGORIAS_FILE)
-            nueva_categoria = {
-                'id': obtener_siguiente_id(categorias),
-                'nombre': form.cleaned_data['nombre'],
-                'estado': True
-            }
-            categorias.append(nueva_categoria)
-            guardar_datos(CATEGORIAS_FILE, categorias)
-            messages.success(request, 'Categoría creada!')
-            return redirect('lista_categorias')
-    else:
-        form = CategoriaForm()
-    return render(request, 'account/categoria_form.html', {
-        'form': form,
+        categorias = leer_datos(CATEGORIAS_FILE)
+        nueva_categoria = {
+            'id': obtener_siguiente_id(categorias),
+            'nombre': request.POST.get('nombre'),
+            'descripcion': request.POST.get('descripcion', ''),
+            'estado': request.POST.get('estado') == 'activo'
+        }
+        categorias.append(nueva_categoria)
+        guardar_datos(CATEGORIAS_FILE, categorias)
+        messages.success(request, 'Categoría creada exitosamente!')
+        return redirect('categorias_listar')
+    
+    return render(request, 'account/categorias.html', {
         'titulo': 'Nueva Categoría'
     })
 
@@ -447,20 +442,21 @@ def editar_categoria(request, pk):
     categoria = next((c for c in categorias if c['id'] == int(pk)), None)
     if not categoria:
         raise Http404("Categoría no encontrada")
+        
     if request.method == 'POST':
-        form = CategoriaForm(request.POST)
-        if form.is_valid():
-            categoria['nombre'] = form.cleaned_data['nombre']
-            guardar_datos(CATEGORIAS_FILE, categorias)
-            messages.success(request, 'Categoría actualizada!')
-            return redirect('lista_categorias')
-    else:
-        form = CategoriaForm(initial={
-            'nombre': categoria['nombre']
+        categoria.update({
+            'nombre': request.POST.get('nombre'),
+            'descripcion': request.POST.get('descripcion', ''),
+            'estado': request.POST.get('estado') == 'activo'
         })
-    return render(request, 'account/categoria_form.html', {
-        'form': form,
-        'titulo': 'Editar Categoría'
+        guardar_datos(CATEGORIAS_FILE, categorias)
+        messages.success(request, 'Categoría actualizada!')
+        return redirect('categorias_listar')
+    
+    return render(request, 'account/categorias.html', {
+        'categoria': categoria,
+        'titulo': 'Editar Categoría',
+        'editar': True
     })
 
 @login_required_custom
@@ -490,23 +486,25 @@ def lista_almacenes(request):
 @login_required_custom
 def crear_almacen(request):
     if request.method == 'POST':
-        form = AlmacenForm(request.POST)
-        if form.is_valid():
-            almacenes = leer_datos(ALMACENES_FILE)
-            nuevo_almacen = {
-                'id': obtener_siguiente_id(almacenes),
-                'nombre': form.cleaned_data['nombre'],
-                'estado': True
-            }
-            almacenes.append(nuevo_almacen)
-            guardar_datos(ALMACENES_FILE, almacenes)
-            messages.success(request, 'Almacén creado!')
-            return redirect('lista_almacenes')
-    else:
-        form = AlmacenForm()
-    return render(request, 'account/almacen_form.html', {
-        'form': form,
-        'titulo': 'Nuevo Almacén'
+        almacenes = leer_datos(ALMACENES_FILE)
+        nuevo_almacen = {
+            'id': obtener_siguiente_id(almacenes),
+            'nombre': request.POST.get('nombre'),
+            'direccion': request.POST.get('direccion'),
+            'telefono': request.POST.get('telefono'),
+            'responsable': request.POST.get('responsable'),
+            'estado': request.POST.get('estado') == 'activo'
+        }
+        almacenes.append(nuevo_almacen)
+        guardar_datos(ALMACENES_FILE, almacenes)
+        messages.success(request, 'Almacén creado exitosamente!')
+        return redirect('almacenes_listar')
+    
+    # Obtener usuarios para el select de responsable
+    usuarios = GestorUsuariosCreados.obtener_usuarios()
+    return render(request, 'account/almacenes.html', {
+        'titulo': 'Nuevo Almacén',
+        'usuarios': usuarios
     })
 
 @login_required_custom
@@ -515,20 +513,25 @@ def editar_almacen(request, pk):
     almacen = next((a for a in almacenes if a['id'] == int(pk)), None)
     if not almacen:
         raise Http404("Almacén no encontrado")
+        
     if request.method == 'POST':
-        form = AlmacenForm(request.POST)
-        if form.is_valid():
-            almacen['nombre'] = form.cleaned_data['nombre']
-            guardar_datos(ALMACENES_FILE, almacenes)
-            messages.success(request, 'Almacén actualizado!')
-            return redirect('lista_almacenes')
-    else:
-        form = AlmacenForm(initial={
-            'nombre': almacen['nombre']
+        almacen.update({
+            'nombre': request.POST.get('nombre'),
+            'direccion': request.POST.get('direccion'),
+            'telefono': request.POST.get('telefono'),
+            'responsable': request.POST.get('responsable'),
+            'estado': request.POST.get('estado') == 'activo'
         })
-    return render(request, 'account/almacen_form.html', {
-        'form': form,
-        'titulo': 'Editar Almacén'
+        guardar_datos(ALMACENES_FILE, almacenes)
+        messages.success(request, 'Almacén actualizado!')
+        return redirect('almacenes_listar')
+    
+    usuarios = GestorUsuariosCreados.obtener_usuarios()
+    return render(request, 'account/almacenes.html', {
+        'almacen': almacen,
+        'titulo': 'Editar Almacén',
+        'usuarios': usuarios,
+        'editar': True
     })
 
 @login_required_custom

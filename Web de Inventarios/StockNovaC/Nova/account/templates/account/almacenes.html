@@ -3,7 +3,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Nuevo Almacén</title>
+    <title>{% if editar %}Editar{% else %}Nuevo{% endif %} Almacén</title>
     <link rel="stylesheet" href="{% static 'account/css/almacenes.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Jost&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -13,7 +13,7 @@
     <div class="icono-titulo">
         <i class="fas fa-warehouse"></i>
     </div>
-    <h2>Nuevo Almacén</h2>
+    <h2>{% if editar %}Editar{% else %}Nuevo{% endif %} Almacén</h2>
 
     {% if messages %}
         {% for message in messages %}
@@ -25,17 +25,17 @@
         {% csrf_token %}
         <div class="form-group">
             <label><i class="fas fa-signature"></i> Nombre del almacén</label>
-            <input type="text" name="nombre" required>
+            <input type="text" name="nombre" value="{% if almacen %}{{ almacen.nombre }}{% endif %}" required>
         </div>
 
         <div class="form-group">
             <label><i class="fas fa-map-marker-alt"></i> Dirección</label>
-            <textarea name="direccion" rows="2" required></textarea>
+            <textarea name="direccion" rows="2" required>{% if almacen %}{{ almacen.direccion }}{% endif %}</textarea>
         </div>
 
         <div class="form-group">
             <label><i class="fas fa-phone"></i> Teléfono</label>
-            <input type="text" name="telefono" required>
+            <input type="text" name="telefono" value="{% if almacen %}{{ almacen.telefono }}{% endif %}" required>
         </div>
 
         <div class="form-group">
@@ -43,7 +43,10 @@
             <select name="responsable" required>
                 <option value="">Seleccione</option>
                 {% for usuario in usuarios %}
-                    <option value="{{ usuario.id }}">{{ usuario.get_full_name }}</option>
+                    <option value="{{ usuario.id }}" 
+                            {% if almacen and almacen.responsable == usuario.id %}selected{% endif %}>
+                        {{ usuario.get_full_name }}
+                    </option>
                 {% endfor %}
             </select>
         </div>
@@ -51,13 +54,21 @@
         <div class="form-group">
             <label><i class="fas fa-toggle-on"></i> Estado</label>
             <div class="estado">
-                <label><input type="radio" name="estado" value="activo" checked> Activo</label>
-                <label><input type="radio" name="estado" value="inactivo"> Inactivo</label>
+                <label>
+                    <input type="radio" name="estado" value="activo" 
+                           {% if not almacen or almacen.estado %}checked{% endif %}> Activo
+                </label>
+                <label>
+                    <input type="radio" name="estado" value="inactivo"
+                           {% if almacen and not almacen.estado %}checked{% endif %}> Inactivo
+                </label>
             </div>
         </div>
 
         <div class="botones">
-            <button class="guardar" type="submit">✔ Guardar</button>
+            <button class="guardar" type="submit">
+                {% if editar %}✔ Actualizar{% else %}✔ Guardar{% endif %}
+            </button>
             <a href="{% url 'almacenes_listar' %}" class="cancelar">✘ Cancelar</a>
         </div>
     </form>

@@ -3,12 +3,120 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Almacenes</title>
+    <title>Lista de Almacenes</title>
     <link rel="stylesheet" href="{% static 'account/css/almacenes.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Jost&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        /* Copia todos los estilos de productos_listar.html hasta .container */
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
+            font-family: 'Jost', sans-serif;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .title {
+            font-size: 24px;
+            color: #333;
+            margin: 0;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #17a2b8;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #138496;
+            transform: translateY(-2px);
+        }
+        
+        .messages {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+        
+        .messages li {
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .products-table th, 
+        .products-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .products-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+        
+        .products-table tr:hover {
+            background-color: #f5f8fa;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .status-active {
+            background-color: #e6f7ee;
+            color: #28a745;
+        }
+        
+        .status-inactive {
+            background-color: #feecec;
+            color: #dc3545;
+        }
         
         .capacity {
             font-weight: 600;
@@ -24,6 +132,67 @@
         
         .capacity-low {
             color: #dc3545;
+        }
+        
+        .action-links {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .edit-link {
+            background-color: #e7f1ff;
+            color: #0056b3;
+        }
+        
+        .edit-link:hover {
+            background-color: #d0e3ff;
+        }
+        
+        .delete-link {
+            background-color: #fdecea;
+            color: #dc3545;
+        }
+        
+        .delete-link:hover {
+            background-color: #fadbd8;
+        }
+        
+        .no-products {
+            text-align: center;
+            padding: 30px;
+            color: #6c757d;
+            font-size: 16px;
+        }
+        
+        .text-muted {
+            color: #6c757d;
+        }
+        
+        .small {
+            font-size: 12px;
+        }
+        
+        @media (max-width: 768px) {
+            .products-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
@@ -60,7 +229,9 @@
                 {% for almacen in almacenes %}
                 <tr>
                     <td>{{ almacen.nombre }}</td>
-                    <td>ALM-{{ almacen.id|stringformat:"04d" }}</td>
+                    <td>
+                        <strong>ALM-{{ almacen.id|stringformat:"04d" }}</strong>
+                    </td>
                     <td>{{ almacen.ubicacion|default:"-" }}</td>
                     <td class="capacity {% if almacen.capacidad > 1000 %}capacity-high{% elif almacen.capacidad > 500 %}capacity-medium{% else %}capacity-low{% endif %}">
                         {{ almacen.capacidad }} m²

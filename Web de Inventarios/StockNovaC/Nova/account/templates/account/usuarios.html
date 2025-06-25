@@ -3,7 +3,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Nuevo Usuario</title>
+    <title>{% if editar %}Editar{% else %}Nuevo{% endif %} Usuario</title>
     <link rel="stylesheet" href="{% static 'account/css/usuarios.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Jost&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -13,7 +13,7 @@
     <div class="icono-titulo">
         <i class="fas fa-user-plus"></i>
     </div>
-    <h2>Nuevo Usuario</h2>
+    <h2>{% if editar %}Editar{% else %}Nuevo{% endif %} Usuario</h2>
 
     {% if messages %}
         {% for message in messages %}
@@ -26,32 +26,37 @@
         <div class="row">
             <div class="form-group">
                 <label><i class="fas fa-signature"></i> Nombres</label>
-                <input type="text" name="nombres" required>
+                <input type="text" name="nombres" 
+                       value="{% if usuario %}{{ usuario.nombres }}{% endif %}" required>
             </div>
             <div class="form-group">
                 <label><i class="fas fa-signature"></i> Apellidos</label>
-                <input type="text" name="apellidos" required>
+                <input type="text" name="apellidos" 
+                       value="{% if usuario %}{{ usuario.apellidos }}{% endif %}" required>
             </div>
         </div>
 
         <div class="form-group">
             <label><i class="fas fa-envelope"></i> Email</label>
-            <input type="email" name="email" required>
+            <input type="email" name="email" 
+                   value="{% if usuario %}{{ usuario.email }}{% endif %}" required>
         </div>
 
         <div class="form-group">
             <label><i class="fas fa-user"></i> Nombre de usuario</label>
-            <input type="text" name="username" required>
+            <input type="text" name="username" 
+                   value="{% if usuario %}{{ usuario.username }}{% endif %}" 
+                   {% if editar %}readonly{% endif %} required>
         </div>
 
         <div class="row">
             <div class="form-group">
                 <label><i class="fas fa-lock"></i> Contraseña</label>
-                <input type="password" name="password1" required>
+                <input type="password" name="password1" {% if not editar %}required{% endif %}>
             </div>
             <div class="form-group">
                 <label><i class="fas fa-lock"></i> Confirmar contraseña</label>
-                <input type="password" name="password2" required>
+                <input type="password" name="password2" {% if not editar %}required{% endif %}>
             </div>
         </div>
 
@@ -59,22 +64,33 @@
             <label><i class="fas fa-users"></i> Rol</label>
             <select name="rol" required>
                 <option value="">Seleccione</option>
-                <option value="admin">Administrador</option>
-                <option value="almacen">Almacén</option>
-                <option value="ventas">Ventas</option>
+                {% for rol in roles %}
+                <option value="{{ rol }}" 
+                        {% if usuario and usuario.rol == rol %}selected{% endif %}>
+                    {{ rol|title }}
+                </option>
+                {% endfor %}
             </select>
         </div>
 
         <div class="form-group">
             <label><i class="fas fa-toggle-on"></i> Estado</label>
             <div class="estado">
-                <label><input type="radio" name="estado" value="activo" checked> Activo</label>
-                <label><input type="radio" name="estado" value="inactivo"> Inactivo</label>
+                <label>
+                    <input type="radio" name="estado" value="activo" 
+                           {% if not usuario or usuario.estado %}checked{% endif %}> Activo
+                </label>
+                <label>
+                    <input type="radio" name="estado" value="inactivo"
+                           {% if usuario and not usuario.estado %}checked{% endif %}> Inactivo
+                </label>
             </div>
         </div>
 
         <div class="botones">
-            <button class="guardar" type="submit">✔ Guardar</button>
+            <button class="guardar" type="submit">
+                {% if editar %}✔ Actualizar{% else %}✔ Guardar{% endif %}
+            </button>
             <a href="{% url 'usuarios_listar' %}" class="cancelar">✘ Cancelar</a>
         </div>
     </form>

@@ -6,92 +6,150 @@ body {
     align-items: center;
     min-height: 100vh;
     margin: 0;
+    padding: 20px;
 }
 
 .card {
     background: white;
-    padding: 20px;
+    padding: 25px;
     width: 360px;
-    border-radius: 16px;
+    border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.card h2 {
+.icono-titulo {
     text-align: center;
-    font-size: 18px;
+    margin-bottom: 15px;
+    color: #3498db;
+    font-size: 2.2rem;
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+    font-size: 1.3rem;
     margin-bottom: 20px;
 }
 
+.alert {
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.alert.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.alert.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
 .form-group {
-    margin-bottom: 14px;
+    margin-bottom: 16px;
 }
 
 .form-group label {
-    font-size: 14px;
     display: flex;
     align-items: center;
-    gap: 6px;
-    margin-bottom: 6px;
-    color: #333;
+    margin-bottom: 8px;
+    color: #555;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.form-group label i {
+    margin-right: 8px;
+    width: 16px;
+    text-align: center;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
     width: 100%;
-    padding: 8px 10px;
+    padding: 9px 12px;
     font-size: 14px;
+    border: 1px solid #ddd;
     border-radius: 6px;
-    border: 1px solid #ccc;
     box-sizing: border-box;
+    font-family: 'Jost', sans-serif;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 60px;
 }
 
 .row {
     display: flex;
-    gap: 10px;
+    gap: 12px;
 }
 
 .row .form-group {
     flex: 1;
-    margin-bottom: 0;
 }
 
 .estado {
     display: flex;
-    gap: 20px;
+    gap: 15px;
     margin-top: 8px;
-    padding-left: 4px;
+}
+
+.estado label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+.estado input[type="radio"] {
+    width: auto;
 }
 
 .botones {
     display: flex;
     justify-content: space-between;
-    margin-top: 20px;
+    gap: 12px;
+    margin-top: 25px;
 }
 
-.botones button {
+.botones button,
+.botones a {
     flex: 1;
-    margin: 0 4px;
     padding: 10px;
-    font-weight: bold;
-    border-radius: 6px;
     border: none;
+    border-radius: 6px;
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.2s;
 }
 
 .guardar {
-    background-color: #007bff;
+    background-color: #3498db;
     color: white;
 }
 
-.cancelar {
-    background-color: #e0e0e0;
-    color: #333;
+.guardar:hover {
+    background-color: #2980b9;
+    transform: translateY(-1px);
 }
 
-.icono-titulo {
-    text-align: center;
-    margin-bottom: 10px;
-    font-size: 24px;
-    color: #3b3b3b;
+.cancelar {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.cancelar:hover {
+    background-color: #c0392b;
+    transform: translateY(-1px);
 }
